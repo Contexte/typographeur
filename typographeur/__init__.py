@@ -69,6 +69,95 @@ def _tokenize(text):
 
     return tokens
 
+words_with_roman = 'siècle|congrès|arrondissement|livre|République'
+
+outside_html= '(?![^<]*>)'
+
+nbsp = "\u00A0"
+
+repls = [
+    # No space start/end of expressions between parentheses
+    { 'in': r'\s\)' + outside_html, 'out': ')' },
+    { 'in': r'\(\s' + outside_html, 'out': '(' },
+
+    # No space before a period or a comma
+    { 'in': r'\s+(\.|,)' + outside_html, 'out': r'\1' },
+
+    # Apostrophe
+    { 'in': r'\'' , 'out': '’' },
+
+    # Ellipsis
+    { 'in': r'\.{3,}' , 'out': '…' },
+    { 'in': r'\.\.' , 'out': '.' },
+
+    # Starting quotation mark
+    { 'in': r'«(\s|)(\w)' , 'out': r'«' + nbsp + r'\2' },
+    { 'in': r'(\s|\n|)"(\w)' + outside_html, 'out': r'\1«' + nbsp + r'\2'},
+
+    # Ending quotation mark
+    { 'in': r'(\s|)»' , 'out': nbsp + r'»' },
+    { 'in': r'"(\s|\.|,|)' + outside_html, 'out': r'' + nbsp + r'»\1'},
+
+    # Dash
+    { 'in': r'\s\-\s(.+?)\s\-' + outside_html, 'out': r' –' + nbsp + r'\1' + nbsp + r'–' },
+    { 'in': r'\s\-\s(.+?)(\.|;)' + outside_html, 'out': r' –' + nbsp + r'\1\2' },
+
+    # Colon, semi-colon, quotation mark, interrogation mark…
+    { 'in': r'(\s|)(:|;|\?|!|%|€|\$)' + outside_html, 'out': r'' + nbsp + r'\2' },
+
+    # Supercript square and cube
+    { 'in': r'([^\d])\s(m|km)2', 'out': r'\1 \2²' },
+    { 'in': r'([^\d])\s(m|km)3', 'out': r'\1 \2³' },
+    { 'in': r'(\d)\s(m|km)2', 'out': r'\1' + nbsp + r'\2²' },
+    { 'in': r'(\d)\s(m|km)3', 'out': r'\1' + nbsp + r'\2³' },
+
+    # Misc units
+    { 'in': r'(\d+)(\s*)(kg(CO|co)2\/m2)', 'out': r'\1' + nbsp + r'kgCO₂/m²' },
+    { 'in': r'(\d+)\s*(W|KW||GW|TW||Wh|KWh|GWh|TWh)', 'out': r'\1' + nbsp + r'\2' },
+    { 'in': r'(\d+)(\s*)(kwhep|KWHEP|kWhep)\/m2', 'out': r'\1' + nbsp + r'kWhep/m²' },
+    { 'in': r'(\d+)(\s*)(m|mètre|kilomètre|km|kW)', 'out': r'\1' + nbsp + r'\3' },
+    { 'in': r'(\d+)(\s*)(km\/h|kW\/h)', 'out': r'\1' + nbsp + r'\3' },
+
+    # Subscript
+    { 'in': r'CO2', 'out': 'CO₂' },
+
+    # Digits + quantifiers
+    { 'in': r'(\d+)\s(années|dizaine|centaine|millier|million|euro|milliard)(s|)', 'out': r'\1' + nbsp + r'\2\3' },
+
+    # Digits + months
+    { 'in': r'(1er|\d)\s(janvier|février|mars|avril|mai|juin|juillet|août|septembre|octobre|décembre)',
+      'out': r'\1' + nbsp + r'\2' },
+
+    # Years
+    { 'in': r'([^,])\s(\d\d\d\d)', 'out': r'\1' + nbsp + r'\2' },
+
+    # Roman numerals
+    { 'in': r'Ier\s(' + words_with_roman + ')', 'out': r'Iᵉʳ' + nbsp + r'\1' },
+    { 'in': r'(X|I|V)e\s(' + words_with_roman + ')', 'out': r'\1ᵉ' + nbsp + r'\2' },
+
+    # Article
+    { 'in': r'((a|A)rticle)\s(\d)', 'out': r'\1' + nbsp + r'\3' },
+
+    # First, second, third, nth…
+    { 'in': r'1er', 'out': '1ᵉʳ' },
+    { 'in': r'([2-9]|0)e', 'out': r'\1ᵉ' },
+
+    # Mister, madame, master
+    { 'in': r'Me\s([A-Z])', 'out': r'Mᵉ' + nbsp + r'\1' },
+    { 'in': r'(M.|Mme|Mlle)\s', 'out': r'\1' + nbsp + r'' },
+
+    # other...
+    { 'in': r'(\d+\.?d*)\s*℃', 'out': r'\1' + nbsp + '℃'},
+    { 'in': r'(\d+\.?d*)\s*℉', 'out': r'\1' + nbsp + '℉'},
+    { 'in': r'(\d+\.?d*)\s*°C', 'out': r'\1' + nbsp + '℃'},
+    { 'in': r'(\d+\.?d*)\s*°F', 'out': r'\1' + nbsp + '℉'},
+    { 'in': r'\s(dizaine|douzaine|centaine|millier|million|milliard|billion|billiard|trillion|trilliard)', 'out': nbsp + r'\1'},
+
+]
+
+for repl in repls:
+    repl['patt'] = re.compile(repl['in'], flags=re.MULTILINE|re.DOTALL)
+
 
 def is_enter_skip(text, skip_tags):
     for tag in skip_tags:
@@ -281,6 +370,10 @@ def typographeur(text,
                 for word in words_ae:
                     wrong_word = word.replace('æ', 'ae')
                     token = re.sub(r'\b({})\b'.format(wrong_word), word, token)
+
+            token = token.replace('&nbsp;',' ')
+            for repl in repls:
+                token = re.sub(repl['patt'], repl['out'], token)
 
             # Final token result
             result.append(token)

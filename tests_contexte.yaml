@@ -1,0 +1,53 @@
+- input: test
+  output: test
+
+- input: "Les tirets d'incise - c'est-à-dire ceux qui séparent une phrase qui interrompt une autre - les tirets d'incise doivent être remplacé par des tirets moyen."
+  expected: "Les tirets d’incise –&nbsp;c’est-à-dire ceux qui séparent une phrase qui interrompt une autre&nbsp;– les tirets d’incise doivent être remplacé par des tirets moyen."
+
+# - input: "Dans des intervalles (1978-1995), le tiret court est remplacé par un tiret moyen dans des mots composés, comme garde-fou, le tiret court reste un tiret court."
+#   expected: "Dans des intervalles (1978–1995), le tiret court est remplacé par un tiret moyen dans des mots composés, comme garde-fou, le tiret court reste un tiret court."
+
+# - input: "Les nombres au-dessus de 1000 sont partagés en tranches de trois chiffres par une éspace fine insécable."
+#   expected: "Les nombres au-dessus de 1&nbsp;000 sont partagés en tranches de trois chiffres par une éspace fine insécable."
+
+# - input: "Les nombres d’années sont exclus de la règles du séparateur de milliers (les définissant en regardant le mot précedent, qui peut être année, en exemple: en 1985, l’annee 2035."
+#   expected: "Les nombres d’années sont exclus de la règles du séparateur de milliers (les définissant en regardant le mot précedent, qui peut être année, en exemple: en 1985, l’annee 2035."
+
+- input: "42m, 42km, 42mètre, 42kilomètre, 42km/h"
+  expected: "42&nbsp;m, 42&nbsp;km, 42&nbsp;mètre, 42&nbsp;kilomètre, 42&nbsp;km/h"
+
+- input: "42 m, 42 km, 42 mètre, 42 kilomètre, 42 km/h"
+  expected: "42&nbsp;m, 42&nbsp;km, 42&nbsp;mètre, 42&nbsp;kilomètre, 42&nbsp;km/h"
+
+- input: "42g, 42kg, 42grammes, 42kilogrammes, 42tonnes"
+  expected: "42&nbsp;g, 42&nbsp;kg, 42&nbsp;grammes, 42&nbsp;kilogrammes, 42&nbsp;tonnes"
+
+- input: "42 g, 42 kg, 42 grammes, 42 kilogrammes, 42 tonnes"
+  expected: "42&nbsp;g, 42&nbsp;kg, 42&nbsp;grammes, 42&nbsp;kilogrammes, 42&nbsp;tonnes"
+
+- input: "42W, 42KW, 42GW, 42TW, 42Wh, 42KWh, 42GWh, 42TWh"
+  expected: "42&nbsp;W, 42&nbsp;KW, 42&nbsp;GW, 42&nbsp;TW, 42&nbsp;Wh, 42&nbsp;KWh, 42&nbsp;GWh, 42&nbsp;TWh"
+
+- input: "0°C ou 0°F c'est pareil"
+  expected: "0&nbsp;℃ ou 0&nbsp;℉ c’est pareil"
+
+- input: "0 ℃ ou 0 ℉ c’est pareil"
+  expected: "0&nbsp;℃ ou 0&nbsp;℉ c’est pareil"
+
+- input: "tout cela c’est kifkif 0euros, 0 euro, 0€, 0dollar, 0 dollars, 0$, 0livre anglais, 0livres anglais, 0£ ou meme 0 £"
+  expected: "tout cela c’est kifkif 0&nbsp;euros, 0&nbsp;euro, 0&nbsp;€, 0&nbsp;dollar, 0&nbsp;dollars, 0&nbsp;$, 0&nbsp;livre anglais, 0&nbsp;livres anglais, 0&nbsp;£ ou meme 0&nbsp;£"
+
+- input: "une dizaine, une douzaine, une centaine, un millier, un million, un milliard, un billion, un billiard, un trillion, un trilliard"
+  expected: "une&nbsp;dizaine, une&nbsp;douzaine, une&nbsp;centaine, un&nbsp;millier, un&nbsp;million, un&nbsp;milliard, un&nbsp;billion, un&nbsp;billiard, un&nbsp;trillion, un&nbsp;trilliard"
+
+- input: "lorem CO2 ipsum"
+  expected: "lorem CO₂&nbsp;ipsum"  # use <sub>
+
+- input: "42 m2, 42 km2, 42 m3, 42 km3"
+  expected: "42&nbsp;m², 42&nbsp;km², 42&nbsp;m³, 42&nbsp;km³"
+
+# - input: "1er test"
+#   expected: "1ᵉʳ&nbsp;test" # TODO: use <sup>
+
+# - input: "42e test"
+#   expected: "42ᵉ&nbsp; test" # TODO: use <sup>
